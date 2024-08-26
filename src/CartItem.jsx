@@ -12,7 +12,6 @@ const CartItem = ({ onContinueShopping, setNumberItem, setAddedToCart }) => {
     const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
     setNumberItem(totalItems);
 
-    // Update addedToCart state based on cart items
     const newAddedToCart = cart.reduce((acc, item) => {
         acc[item.name] = true;
         return acc;
