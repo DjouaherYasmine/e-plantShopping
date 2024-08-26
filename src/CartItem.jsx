@@ -4,23 +4,28 @@ import { removeItem, updateQuantity } from './CartSlice';
 import './CartItem.css';
 import ProductList from './ProductList';
 
-const CartItem = ({ onContinueShopping, setNumberItem }) => {
+const CartItem = ({ onContinueShopping, setNumberItem, setAddedToCart }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
   
   useEffect(() => {
-    console.log('Cart updated:', cart); // Debugging log
     const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-    console.log('Updating numberItem to:', totalItems); // Debugging log
     setNumberItem(totalItems);
-  }, [cart, setNumberItem]);
 
-  // Calculate total amount for all products in the cart
+    // Update addedToCart state based on cart items
+    const newAddedToCart = cart.reduce((acc, item) => {
+        acc[item.name] = true;
+        return acc;
+    }, {});
+    setAddedToCart(newAddedToCart);
+}, [cart, setNumberItem, setAddedToCart]);
+
+  
   const calculateTotalAmount = () => {
   return cart.reduce((total, item) => {
-    const cost = parseFloat(item.cost.replace('$', '')) || 0; // Ensure cost is a number
+    const cost = parseFloat(item.cost.replace('$', '')) || 0;
     return total + cost * item.quantity;
-  }, 0).toFixed(2); // Return as a string with 2 decimal places
+  }, 0).toFixed(2); 
 };
 
   const handleContinueShopping = (e) => {
@@ -51,15 +56,11 @@ const CartItem = ({ onContinueShopping, setNumberItem }) => {
    
   };
 
-  // Calculate total cost based on quantity for an item
   const calculateTotalCost = (item) => {
-    // Ensure `item.cost` is a number
     const cost = typeof item.cost === 'string' ? parseFloat(item.cost.replace('$', '')) : item.cost;
-    
-    // Ensure `item.quantity` is a number
+   
     const quantity = typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity;
 
-    // Calculate total cost
     const total = cost * quantity;
     
     return total;
